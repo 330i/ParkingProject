@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "160265780242",
+    "project_id": "par-kit",
+    "storage_bucket": "par-kit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160265780242:android:44e9810c99ce2b1c15eccb",
+        "android_client_info": {
+          "package_name": "com.productofiandkim.parkit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "160265780242-1icfo2mo8cmj7qsc6cql3r0djrti3m9s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.productofiandkim.parkit",
+            "certificate_hash": "fb6436858cdf688f9218bdbbbd37e3b8f282d38a"
+          }
+        },
+        {
+          "client_id": "160265780242-5rvul2shs2elvqvv6crk2n11scnm7ojj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPX1iHXkm--FSK65gv6nvNVFTfYguNWMA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "160265780242-5rvul2shs2elvqvv6crk2n11scnm7ojj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
