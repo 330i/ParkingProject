@@ -1,10 +1,16 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:parkit/screens/create_parking.dart';
+import 'package:parkit/screens/local_map.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:qrscan/qrscan.dart' as scanner;
 
 class InfoPage extends StatefulWidget {
   @override
@@ -81,6 +87,9 @@ class _InfoPageState extends State<InfoPage> {
                       Text('Nearby Spaces', style: TextStyle(color: Colors.black45)),
                     ]),
               ),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (context) => LocalMap()));
+              },
             ),
             _buildTile(
               Padding(
@@ -103,6 +112,10 @@ class _InfoPageState extends State<InfoPage> {
                       Text('Parking Space', style: TextStyle(color: Colors.black45)),
                     ]),
               ),
+              onTap: () async {
+                String cameraScanResult = await scanner.scan();
+                print(cameraScanResult);
+              },
             ),
             _noTapBuildTile(
               Padding(
@@ -149,7 +162,7 @@ class _InfoPageState extends State<InfoPage> {
                               itemCount: userSpotData.size,
                               itemBuilder: (context, index) {
                                 return StreamBuilder(
-                                  stream: FirebaseFirestore.instance.collection('spots').doc(userSpotData.docs[index]['geocode']).snapshots(),
+                                  stream: FirebaseFirestore.instance.collection('spots').doc(userSpotData.docs[index]['geocode'].toString().substring(0,4)).collection(userSpotData.docs[index]['geocode'].toString().substring(0,4)).doc(userSpotData.docs[index]['geocode'].toString().substring(4)).snapshots(),
                                   builder: (context, occupyStream) {
                                     if(occupyStream.hasData) {
                                       return _spaceTile('${userSpotData.docs[index]['geocode']}', userSpotData.docs[index]['rate'], (occupyStream.data! as DocumentSnapshot)['isOccupied']);

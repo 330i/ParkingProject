@@ -1,3 +1,4 @@
+import 'package:latlong/latlong.dart';
 import 'package:open_location_code/open_location_code.dart' as olc;
 import 'package:geolocator/geolocator.dart';
 
@@ -25,6 +26,11 @@ Future<Position> _getCurrentPosition() async {
 Future<String> getPlusCode() async {
   Position _currentPos = await _getCurrentPosition();
   return olc.encode(_currentPos.latitude, _currentPos.longitude, codeLength: 12);
+}
+
+Future<LatLng> getCurrentLatLng() async {
+  Position _currentPos = await _getCurrentPosition();
+  return LatLng(_currentPos.latitude, _currentPos.longitude);
 }
 
 List<double> getPosition(String fromPlusCode) {

@@ -331,11 +331,13 @@ class _PricingState extends State<Pricing> with TickerProviderStateMixin {
                       'geocode': widget.geocode,
                       'rate': toDouble(NumberFormat("#,##0.00", "en_US").format(priceOfSpot)),
                     }).then((value) async {
-                      await FirebaseFirestore.instance.collection('spots').doc(widget.geocode).set({
+                      await FirebaseFirestore.instance.collection('spots').doc(widget.geocode.substring(0,4)).collection(widget.geocode.substring(0,4)).doc(widget.geocode.substring(4)).set({
                         'id': widget.geocode,
                         'rate': toDouble(NumberFormat("#,##0.00", "en_US").format(priceOfSpot)),
                         'isOccupied': false,
                         'uid': FirebaseAuth.instance.currentUser!.uid,
+                        'lastStart': null,
+                        'user': 'none',
                       }).then((otherValue) {
                         Navigator.of(context).push(CupertinoPageRoute(builder: (context) => QRResult(geocode: widget.geocode,)));
                       });

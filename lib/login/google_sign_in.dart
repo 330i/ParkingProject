@@ -140,6 +140,7 @@ class _SigninState extends State<Signin> {
                         'uid': FirebaseAuth.instance.currentUser!.uid,
                         'email': FirebaseAuth.instance.currentUser!.email,
                         'name': FirebaseAuth.instance.currentUser!.displayName,
+                        'isParked': false,
                       }).then((value) {
                         Navigator.of(context).pushAndRemoveUntil(CupertinoPageRoute(builder: (context) => Navigation()),ModalRoute.withName('/login'));
                       });
