@@ -1,14 +1,12 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:parkit/screens/create_parking.dart';
 import 'package:parkit/screens/local_map.dart';
+import 'package:parkit/screens/use_parking.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
 
@@ -114,7 +112,27 @@ class _InfoPageState extends State<InfoPage> {
               ),
               onTap: () async {
                 String cameraScanResult = await scanner.scan();
-                print(cameraScanResult);
+                if(cameraScanResult.startsWith('parkit')&&cameraScanResult[14]=='+'){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => UseParking()));
+                }
+                else {
+                  showDialog<void>(
+                    context: context,
+                    barrierDismissible: true,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Error'),
+                        content: SingleChildScrollView(
+                          child: ListBody(
+                            children: <Widget>[
+                              Text('Invalid QR Code'),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
               },
             ),
             _noTapBuildTile(
@@ -164,7 +182,7 @@ class _InfoPageState extends State<InfoPage> {
                                 return StreamBuilder(
                                   stream: FirebaseFirestore.instance.collection('spots').doc(userSpotData.docs[index]['geocode'].toString().substring(0,4)).collection(userSpotData.docs[index]['geocode'].toString().substring(0,4)).doc(userSpotData.docs[index]['geocode'].toString().substring(4)).snapshots(),
                                   builder: (context, occupyStream) {
-                                    if(occupyStream.hasData) {
+                                    if(occupyStream.connectionState==ConnectionState.active) {
                                       return _spaceTile('${userSpotData.docs[index]['geocode']}', userSpotData.docs[index]['rate'], (occupyStream.data! as DocumentSnapshot)['isOccupied']);
                                     }
                                     else if(occupyStream.hasError) {
@@ -232,10 +250,8 @@ class _InfoPageState extends State<InfoPage> {
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 5),
       child: InkWell(
-        onTap: onTap != null
-            ? () => onTap()
-            : () {
-          print('Not set yet');
+        onTap: () {
+          Navigator.of(context).push(CupertinoPageRoute(builder: (context) => QRResult(geocode: qrid,)));
         },
         child: Container(
           child: Padding(

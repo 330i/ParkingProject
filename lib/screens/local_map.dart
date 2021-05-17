@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:intl/intl.dart';
@@ -13,22 +12,39 @@ class LocalMap extends StatefulWidget {
 }
 
 class _LocalMapState extends State<LocalMap> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        shadowColor: Colors.transparent,
+        title: Text(
+          'Nearby Parking Spaces',
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black,),
+        ),
+      ),
       body: StreamBuilder(
         stream: getCurrentLatLng().asStream(),
         builder: (context, currentLocation) {
-          if(currentLocation.hasData) {
+          if(currentLocation.connectionState==ConnectionState.done) {
             LatLng currentLatLng = currentLocation.data as LatLng;
             return FutureBuilder(
               future: getPlusCode(),
               builder: (context, currentPlusCode) {
                 if(currentPlusCode.hasData) {
-                  return FutureBuilder(
-                    future: FirebaseFirestore.instance.collection('spots').doc(currentPlusCode.data.toString().substring(0,4)).collection(currentPlusCode.data.toString().substring(0,4)).get(),
+                  return StreamBuilder(
+                    stream: FirebaseFirestore.instance.collection('spots').doc(currentPlusCode.data.toString().substring(0,4)).collection(currentPlusCode.data.toString().substring(0,4)).snapshots(),
                     builder: (context, snapshot) {
-                      if(snapshot.hasData) {
+                      if(snapshot.connectionState==ConnectionState.active) {
                         List<Marker> spotList = [];
                         spotList.add(
                           Marker(
@@ -43,7 +59,7 @@ class _LocalMapState extends State<LocalMap> {
                         );
                         for(int i=0;i<(snapshot.data! as QuerySnapshot).docs.length;i++) {
                           DocumentSnapshot currentDoc = (snapshot.data as QuerySnapshot).docs[i];
-                          spotList.add(SpotMarker(currentDoc['rate'], currentDoc['id']));
+                          spotList.add(SpotMarker(currentDoc['rate'], currentDoc['id'], currentDoc['isOccupied']));
                         }
                         return FlutterMap(
                           options: new MapOptions(
@@ -109,7 +125,7 @@ class _LocalMapState extends State<LocalMap> {
     );
   }
 
-  SpotMarker(var price, String plusCode) {
+  SpotMarker(var price, String plusCode, bool occupied) {
     return Marker(
       width: 105.0,
       height: 160.0,
@@ -142,7 +158,7 @@ class _LocalMapState extends State<LocalMap> {
                       ),
                     ],
                   ),
-                  Image.asset('assets/spot.png', fit: BoxFit.contain, height: 50,)
+                  occupied ? Image.asset('assets/nospot.png', fit: BoxFit.contain, height: 50,) : Image.asset('assets/spot.png', fit: BoxFit.contain, height: 50,)
                 ],
               ),
             ),

@@ -49,6 +49,42 @@ class _SettingsState extends State<Settings> {
                     child: Row(
                       children: <Widget>[
                         Icon(
+                          Icons.info_outline_rounded,
+                          color: Colors.black,
+                        ),
+                        Container(
+                          width: 10,
+                        ),
+                        Text(
+                          'Licenses',
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  onPressed: () {
+                    showLicensePage(context: context);
+                  },
+                  splashColor: Color.fromRGBO(158, 158, 158, 1),
+                  highlightColor: Color.fromRGBO(189, 189, 189, 1),
+                ),
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Container(
+                width: 10,
+              ),
+              Container(
+                child: FlatButton(
+                  child: Container(
+                    width: MediaQuery.of(context).size.width-50,
+                    child: Row(
+                      children: <Widget>[
+                        Icon(
                           Icons.exit_to_app,
                           color: Colors.red,
                         ),

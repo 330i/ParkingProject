@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:parkit/models/pluscode.dart';
-import 'package:parkit/screens/info_page.dart';
+import 'package:parkit/screens/navigation.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:rive/rive.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
@@ -422,7 +422,7 @@ class _QRResultState extends State<QRResult> with TickerProviderStateMixin {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => InfoPage()),ModalRoute.withName('/screens'));
+                    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => Navigation()),ModalRoute.withName('/screens'));
                   },
                 ),
               ),
