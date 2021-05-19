@@ -7,8 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:parkit/screens/create_parking.dart';
 import 'package:parkit/screens/local_map.dart';
 import 'package:parkit/screens/use_parking.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:validators/sanitizers.dart';
 
 class InfoPage extends StatefulWidget {
   @override
@@ -89,48 +91,140 @@ class _InfoPageState extends State<InfoPage> {
                 Navigator.of(context).push(MaterialPageRoute(builder: (context) => LocalMap()));
               },
             ),
-            _buildTile(
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Center(
-                        child: Icon(
-                          Icons.qr_code,
-                          size: 115,
-                        ),
-                      ),
-                      Text('Use',
-                          style: TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 24.0)),
-                      Text('Parking Space', style: TextStyle(color: Colors.black45)),
-                    ]),
-              ),
-              onTap: () async {
-                String cameraScanResult = await scanner.scan();
-                if(cameraScanResult.startsWith('parkit')&&cameraScanResult[14]=='+'){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => UseParking()));
+            StreamBuilder(
+              stream: FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).snapshots(),
+              builder: (context, snapshot) {
+                if(snapshot.connectionState==ConnectionState.active) {
+                  return !(snapshot.data! as DocumentSnapshot)['isParked'] ? _buildTile(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Center(
+                              child: Icon(
+                                Icons.qr_code,
+                                size: 115,
+                              ),
+                            ),
+                            Text('Use',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 24.0)),
+                            Text('Parking Space', style: TextStyle(color: Colors.black45)),
+                          ]),
+                    ),
+                    onTap: () async {
+                      await Permission.camera.request();
+                      String cameraScanResult = await scanner.scan();
+                      await FirebaseFirestore.instance.collection('spots').doc(cameraScanResult.substring(6,10)).collection(cameraScanResult.substring(6,10)).doc(cameraScanResult.substring(10,19)).get().then((value) {
+                        if(cameraScanResult.startsWith('parkit')&&cameraScanResult[14]=='+'){
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context) => UseParking(geocode: cameraScanResult.substring(6,19),)));
+                        }
+                        else if(value.data()!['isOccupied']) {
+                          showDialog<void>(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Error'),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text('Spot Currently Occupied'),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
+                        else {
+                          showDialog<void>(
+                            context: context,
+                            barrierDismissible: true,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Error'),
+                                content: SingleChildScrollView(
+                                  child: ListBody(
+                                    children: <Widget>[
+                                      Text('Invalid QR Code'),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
+                      });
+                    },
+                  ) :
+                  _buildTile(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Center(
+                              child: Icon(
+                                Icons.qr_code,
+                                size: 115,
+                              ),
+                            ),
+                            Text('Checkout',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 24.0)),
+                            Text('Parking Space', style: TextStyle(color: Colors.black45)),
+                          ]),
+                    ),
+                    onTap: () async {
+                      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get().then((user) async {
+                        double price;
+                        await FirebaseFirestore.instance.collection('spots').doc(user.data()!['space'].substring(0,4)).collection(user.data()!['space'].substring(0,4)).doc(user.data()!['space'].substring(4,13)).get().then((space) async {
+                          price = toDouble(NumberFormat("#,##0.00", "en_US").format(space.data()!['rate']*(DateTime.now().millisecondsSinceEpoch-(space.data()!['lastStart'] as Timestamp).millisecondsSinceEpoch)/3600000.0));
+                          await FirebaseFirestore.instance.collection('spots').doc(user.data()!['space'].substring(0,4)).collection(user.data()!['space'].substring(0,4)).doc(user.data()!['space'].substring(4,13)).update({
+                            'isOccupied': false,
+                            'lastStart': null,
+                            'user': 'none',
+                          }).then((value) async {
+                            await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
+                              'isParked': false,
+                              'space': 'none',
+                            }).then((othername) {
+                              showDialog<void>(
+                                context: context,
+                                barrierDismissible: true,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text('Checkout'),
+                                    content: SingleChildScrollView(
+                                      child: ListBody(
+                                        children: <Widget>[
+                                          Text('Time: About ${toDouble(NumberFormat("#,##0.00", "en_US").format((DateTime.now().millisecondsSinceEpoch-(space.data()!['lastStart'] as Timestamp).millisecondsSinceEpoch)/3600000.0))} Hours'),
+                                          Text('Rate: ${space.data()!['rate']}/hour'),
+                                          Text('Total: $price'),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            });
+                          });
+                        });
+                      });
+                    },
+                  );
                 }
                 else {
-                  showDialog<void>(
-                    context: context,
-                    barrierDismissible: true,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Error'),
-                        content: SingleChildScrollView(
-                          child: ListBody(
-                            children: <Widget>[
-                              Text('Invalid QR Code'),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
                 }
               },

@@ -65,7 +65,15 @@ class _SettingsState extends State<Settings> {
                     ),
                   ),
                   onPressed: () {
-                    showLicensePage(context: context);
+                    showLicensePage(
+                      context: context,
+                      applicationIcon: Image.asset(
+                        'assets/icon.png',
+                        height: 100,
+                      ),
+                      applicationName: 'ParKit',
+                      applicationVersion: 'v0.0.1 Pre-Alpha',
+                    );
                   },
                   splashColor: Color.fromRGBO(158, 158, 158, 1),
                   highlightColor: Color.fromRGBO(189, 189, 189, 1),
