@@ -187,7 +187,7 @@ class _InfoPageState extends State<InfoPage> {
                       await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get().then((user) async {
                         double price;
                         await FirebaseFirestore.instance.collection('spots').doc(user.data()!['space'].substring(0,4)).collection(user.data()!['space'].substring(0,4)).doc(user.data()!['space'].substring(4,13)).get().then((space) async {
-                          price = toDouble(NumberFormat("#,##0.00", "en_US").format(space.data()!['rate']*(DateTime.now().millisecondsSinceEpoch-(space.data()!['lastStart'] as Timestamp).millisecondsSinceEpoch)/3600000.0));
+                          price = (((space.data()!['rate']*(DateTime.now().millisecondsSinceEpoch-(space.data()!['lastStart'] as Timestamp).millisecondsSinceEpoch)/3600000.0)*100).floor())/100.0;
                           await FirebaseFirestore.instance.collection('spots').doc(user.data()!['space'].substring(0,4)).collection(user.data()!['space'].substring(0,4)).doc(user.data()!['space'].substring(4,13)).update({
                             'isOccupied': false,
                             'lastStart': null,
@@ -206,9 +206,9 @@ class _InfoPageState extends State<InfoPage> {
                                     content: SingleChildScrollView(
                                       child: ListBody(
                                         children: <Widget>[
-                                          Text('Time: About ${toDouble(NumberFormat("#,##0.00", "en_US").format((DateTime.now().millisecondsSinceEpoch-(space.data()!['lastStart'] as Timestamp).millisecondsSinceEpoch)/3600000.0))} Hours'),
+                                          Text('Time: About ${NumberFormat("#,##0.00", "en_US").format((DateTime.now().millisecondsSinceEpoch-(space.data()!['lastStart'] as Timestamp).millisecondsSinceEpoch)/3600000.0)} Hours'),
                                           Text('Rate: ${space.data()!['rate']}/hour'),
-                                          Text('Total: $price'),
+                                          Text('Total: \$${NumberFormat("#,##0.00", "en_US").format(price)}'),
                                         ],
                                       ),
                                     ),
