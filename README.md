@@ -48,5 +48,5 @@ Open Location Codes or Plus Codes are a system of coordinates developed by Googl
 You can learn more here: https://maps.google.com/pluscodes/
 
 ## Unresolved Problems
- - As mentioned before, there is no transaction service due to practical reasons.
+ - As mentioned before, there is no transaction service due.
  - The map disappears when zoomed in too far.
