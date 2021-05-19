@@ -18,7 +18,7 @@ After signing in with Google, we arrive at the home screen. From here, we have t
 
 https://user-images.githubusercontent.com/55478663/118779070-52254200-b850-11eb-9dea-c97afe1c3f25.mp4
 
-To create a parking space, we first press the plus icon on the Create Parking Space block. Then, go to the location of the parking space. Then, press the blue button. Then, press the blue button again. After that, set the price. Finally, you will get a QR Code for the parking space. Take a screenshot and print the QR Code. Then, place the QR Code on the parking spot. If you cannot take a screenshot, you can access the QR Code by tapping the parking space on the Create Parking Space block.
+To create a parking space, we first press the plus icon on the Create Parking Space block. Then, go to the location of the parking space. Then, press the blue button. Then, press the blue button again. After that, set the price. Finally, you will get a QR Code for the parking space. Take a screenshot and print the QR Code. Then, place the QR Code on the parking spot. If you cannot take a screenshot, you can access the QR Code by tapping the parking space on the Create Parking Space block. Although not seen in the video, you can delete your parking space.
 
 ### Find Nearby Parking Spaces
 
@@ -46,3 +46,7 @@ The database of the app uses Google's Firebase Firestore. The database is not on
 
 Open Location Codes or Plus Codes are a system of coordinates developed by Google's Zurich office. It uses eight characters plus additional characters, thus its plus name. Each character represents a subdivision of Earth, and more characters mean more accuracy.  
 You can learn more here: https://maps.google.com/pluscodes/
+
+## Unresolved Problems
+ - As mentioned before, there is no transaction service due to practical reasons.
+ - The map disappears when zoomed in too far.
