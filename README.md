@@ -1,4 +1,4 @@
-# Computer Science 3 Project
+# Project ParKit
 
 ## Inspiration
 I once saw a Top Gear challenge. James May's Rolls Royce Corniche Fixed Head with Coachwork by H. J. Mulliner Park Ward against Jeremy Clarkson’s Mercedes 600 Grosser. The two were competing for parking spots in the middle of London. After giving up a parking spot because of the pay-by-phone system, this made me wonder. How are people going to find parking spaces right after the pandemic life?  
