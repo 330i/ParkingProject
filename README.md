@@ -22,8 +22,6 @@ To create a parking space, we first press the plus icon on the Create Parking Sp
 
 ### Find Nearby Parking Spaces
 
-https://user-images.githubusercontent.com/55478663/118779110-594c5000-b850-11eb-9ddf-69d54dce1f03.mp4
-
 The Find Nearby Spaces page presents a map. Because I might use Google Cloud credits on a different project, the current version uses OpenStreetMaps. On this page, there are nearby parking spaces. All spaces rendered in the map are nearest based on the first four characters of the Plus Codes.
 
 ### Use Parking Space
